@@ -7,7 +7,7 @@ class Forest(object):
 	def lookup(self, x):
 		"""Returns the predicted value given the parameters."""
 		preds = map(lambda t: t.lookup(x), self.trees)
-		return numpy.mean(preds)
+		return numpy.mean(list(preds))
 
 	def predict_all(self, data):
 		"""Returns the predicted values for a list of data points."""
@@ -16,6 +16,7 @@ class Forest(object):
 def make_boot(pairs, n):
 	"""Construct a bootstrap sample from the data."""
 	inds = numpy.random.choice(n, size=n, replace=True)
+	pairs = list(pairs)
 	return dict(map(lambda x: pairs[x], inds))
 
 def make_forest(data, B, max_depth = 500, Nmin = 5, labels = {}):

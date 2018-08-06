@@ -2,7 +2,7 @@ import csv
 from random_forest import *
 
 
-football = open("football.csv", "rb")
+football = open("football.csv", "r")
 f_reader = csv.DictReader(football)
 years = ["VII", "VIII", "IX", "X", "XI", "XII", "XIII"]
 variables = ["Age", "Att", "YA", "Rec", "YR", "RRTD", "Fmb"]
@@ -36,7 +36,7 @@ for row in f_reader:
 B = 50
 forest = make_forest(train_dict, B, max_depth = 500, Nmin = 5, labels = labels)
 
-f = open("football_forest_new.txt", "wb")
+f = open("football_forest_new.txt", "w")
 error = []
 for i in test_dict:
     predict = forest.lookup(test_dict[i][0])
@@ -45,4 +45,4 @@ for i in test_dict:
     error.append(abs(act_val - predict))
     
 f.close()
-print numpy.mean(numpy.array(error))
+print(numpy.mean(numpy.array(error)))

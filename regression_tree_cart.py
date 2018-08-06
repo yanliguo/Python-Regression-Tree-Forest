@@ -162,15 +162,15 @@ class Tree(object):
 
 def grow_tree(data, depth, max_depth = 500, Nmin = 5, labels = {}, start = False, feat_bag = False):
     """Function to grow a regression tree given some training data."""
-    root = Tree(region_error(data.values()), numpy.mean(numpy.array(data.values())), 
-        numpy.std(numpy.array(data.values())), start, len(data.values()))
+    root = Tree(region_error(list(data.values())), numpy.mean(numpy.array(list(data.values()))), 
+        numpy.std(numpy.array(list(data.values()))), start, len(data.values()))
     # regions has fewer than Nmin data points
     if (len(data.values()) <= Nmin):
         return root
     # length of tree exceeds max_depth
     if depth >= max_depth:
         return root
-    num_vars = len(data.keys()[0])
+    num_vars = len(list(data.keys())[0])
 
     min_error = -1
     min_split = -1
@@ -300,7 +300,7 @@ def error_function(split_point, split_var, data):
     
 def region_error(data):
     """Calculates sum of squared error for some node in the regression tree."""
-    data = numpy.array(data)
+    data = numpy.array(list(data))
     return numpy.sum((data - numpy.mean(data))**2)
 
 
