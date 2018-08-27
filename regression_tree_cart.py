@@ -20,6 +20,27 @@ tree_font = pygame.font.SysFont("Arial", 8)
 height = 3000
 width = 1200
 
+
+def is_tree(node):
+    return node is not None and node.is_tree()
+
+def is_leaf(node):
+    return node is None or not node.is_tree()
+
+def data_split(data_dict, feature_idx, feature_split):
+    data_left = {}
+    data_right = {}
+    for d in data_dict:
+        if d[feature_idx] < feature_split:
+            data_left[d] = data_dict[d]
+        else:
+            data_right[d] = data_dict[d]
+    return data_left, data_right
+
+def square_errors(data, anchor):
+    data = numpy.array(list(data))
+    return numpy.sum((data - anchor)**2)
+
 class Tree(object):
     def __init__(self, error, predict, stdev, start, num_points):
         self.error = error
@@ -41,6 +62,20 @@ class Tree(object):
             return self.left.lookup(x)
         return self.right.lookup(x)
 
+    def lookup_with_path(self, x):
+        """ Return the predicted val and split path given the parameters. """
+        predict = None
+        path = None
+        if self.left is None:
+            predict = self.predict
+            path = []
+        else:
+            if x[self.split_var] <= self.split_val:
+                predict, path = self.left.lookup_with_path(x)
+            else:
+                predict, path = self.right.lookup_with_path(x)
+        path.append( (self.split_var, self.split_val) )
+        return predict, path
     
     def predict_all(self, data):
         """Returns the predicted values for some list of data points."""
@@ -68,6 +103,48 @@ class Tree(object):
             smallest_trees = smallest_trees + tree_left
         return smallest_alpha, smallest_trees
     
+        def is_tree(self):
+        return self.left is not None or self.right is not None
+
+    def get_mean_predict(self):
+        if is_tree(self.left):
+            left_mean = self.left.get_mean_predict()
+        else:
+            left_mean = self.left.predict if self.left is not None else 0
+        if is_tree(self.right):
+            right_mean = self.right.get_,eam_predict()
+        else:
+            right_mean = self.right.predict if self.right is not None else 0
+        return (right_mean + left_mean) / 2.0
+
+    def prune_cart_tree(self, test_data):
+        """
+        Prune cart tree, to merge some leavies
+        test_data is dict([features]) -> value
+        """
+        if len(test_data) == 0:
+            return self
+        if is_tree(self.left) or is_tree(self.right):
+            data_left, data_right = data_split(test_data, self.split_var, self.split_val)
+            if is_tree(self.left):
+                self.left = self.left.prune_cart_tree(data_left)
+            if is_tree(self.right):
+                self.right = self.right.prune_cart_tree(data_right)
+        # leaf
+        if not is_tree(self.left) and not is_tree(self.right):
+            data_left, data_right = data_split(test_data, self.split_var, self.split_val)
+            left_predict = self.left.predict if self.left is not None else 0
+            right_predict = self.right.predict if self.right is not None else 0
+            error_no_merge = square_errors(data_left.values(), left_predict) + 
+                square_errors(data_right.values(), right_predict)
+            mean_predicted = self.get_mean_predict()
+            error_after_merge = square_errors(test_data.values(), mean_predicted)
+            # merge left and right leaf, using mean predict
+            if error_no_merge > error_after_merge:
+                self.left = None
+                self.right = None
+                self.split_predict = mean_predicted
+        return self
     
     def prune_tree(self):
         """Finds {a1, ..., ak} and {T1, ..., Tk},
