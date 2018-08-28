@@ -72,9 +72,10 @@ class Tree(object):
         else:
             if x[self.split_var] <= self.split_val:
                 predict, path = self.left.lookup_with_path(x)
+                path.append( (self.split_var, self.split_val) )
             else:
                 predict, path = self.right.lookup_with_path(x)
-        path.append( (self.split_var, self.split_val) )
+                path.append( (self.split_var, self.split_val) )
         return predict, path
     
     def predict_all(self, data):
@@ -103,7 +104,7 @@ class Tree(object):
             smallest_trees = smallest_trees + tree_left
         return smallest_alpha, smallest_trees
     
-        def is_tree(self):
+    def is_tree(self):
         return self.left is not None or self.right is not None
 
     def get_mean_predict(self):
@@ -135,8 +136,7 @@ class Tree(object):
             data_left, data_right = data_split(test_data, self.split_var, self.split_val)
             left_predict = self.left.predict if self.left is not None else 0
             right_predict = self.right.predict if self.right is not None else 0
-            error_no_merge = square_errors(data_left.values(), left_predict) + 
-                square_errors(data_right.values(), right_predict)
+            error_no_merge = square_errors(data_left.values(), left_predict) + square_errors(data_right.values(), right_predict)
             mean_predicted = self.get_mean_predict()
             error_after_merge = square_errors(test_data.values(), mean_predicted)
             # merge left and right leaf, using mean predict

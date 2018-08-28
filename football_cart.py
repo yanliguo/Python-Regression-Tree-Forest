@@ -8,14 +8,15 @@ def test_and_print(test_dict_lines, tree_root):
         value = test_dict_lines[name]
         features = value[0]
         predict, path = tree_root.lookup_with_path(features)
+        path.reverse()
         act_val = value[1]
-        print("For test example: ", name, "lookup features:", path)
+        print("\nFor test example: ", name, "\n\tlookup features:", path)
         print("\tActual value:", act_val, "\tpredicted value:", predict)
         errors.append(abs(act_val - predict))
     print("** Avg error:", numpy.mean(numpy.array(errors)))
         
 
-football = open("football.csv", "rb")
+football = open("football.csv", "r")
 f_reader = csv.DictReader(football)
 years = ["VII", "VIII", "IX", "X", "XI", "XII", "XIII"]
 variables = ["Age", "Att", "YA", "Rec", "YR", "RRTD", "Fmb"]
