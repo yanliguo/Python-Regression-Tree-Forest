@@ -1,0 +1,7 @@
+scipy>=1.1.0
+numpy>=1.15.1
+pygame>=1.9.4
+pickle
+pillow>=5.2.0
+matplotlib>=2.2.3
+
