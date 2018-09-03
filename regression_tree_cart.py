@@ -130,6 +130,23 @@ class Tree(object):
             right_mean = self.right.predict if self.right is not None else 0
         return (right_mean + left_mean) / 2.0
 
+    def get_feature_weights(self):
+        """
+        return the split counts for each feature
+        """
+        left_wts = None
+        if self.left is not None:
+            left_wts = self.left.get_feature_weights()
+        else:
+            left_wts = {}
+        if self.right is not None:
+            right_wts = self.right.get_feature_weights()
+            for (k, v) in right_wts.items():
+                left_wts[k] = left_wts.get(k, 0) + v
+        if self.split_var is not None:
+            left_wts[self.split_var] = left_wts.get(self.split_var, 0) + 1
+        return left_wts
+
     def prune_cart_tree(self, test_data):
         """
         Prune cart tree, to merge some leavies

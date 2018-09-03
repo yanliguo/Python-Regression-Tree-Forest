@@ -61,6 +61,7 @@ args = sys.argv.copy()
 # number of bootstrap samples
 B = 50
 
+# CMD: "--load file" loads model from file
 load_idx = args.index('--load') if '--load' in args else -1
 loaded = False
 tree_root = None
@@ -72,24 +73,38 @@ if load_idx >= 0:
 if tree_root is None:
     tree_root = make_cart_tree(train_dict, B, max_depth=500, Nmin=5, labels=labels)
 
+# CMD: "--test" tells the app to run test cases
 if '--test' in args:
     test_and_print(test_dict_lines, tree_root, label_dicts=labels)
-    # if the model is load from file,
-    # no need to prune again
-    if not loaded:
-        tree_root.prune_cart_tree(test_dict)
-        test_and_print(test_dict_lines, tree_root)
+    
+# if the model is load from file,
+# no need to prune again
+if not loaded:
+    tree_root.prune_cart_tree(test_dict)
 
+if '--test' in args:
+    test_and_print(test_dict_lines, tree_root)
+
+
+# CMD:  "--save file" will save model to 'file'
 if '--save' in args:
     save_idx = args.index('--save')
     save_file_name = args[save_idx + 1]
     save_model(save_file_name, tree_root)
 
 
-# plot tree
+# CMD: '--plot-tree' will plot the entire tree
 if '--plot-tree' in args:
     plot_cart(tree_root)
 
+# CMD: '--plot-weights' will plot tree split weights
+if '--plot-weights' in args:
+    wts = tree_root.get_feature_weights()
+    wts = {labels.get(k, ''): v for (k, v) in wts.items()}
+    plot_feature_importance(wts, title='Split feature weights')
+
+
+# CMD: '--plot-feature' plots split counts for feature of the first test case
 if '--plot-feature' in args:
     name = list(test_dict_lines.keys())[0]
     feature, actual = test_dict_lines[name]

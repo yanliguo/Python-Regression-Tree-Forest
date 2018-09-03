@@ -10,3 +10,22 @@ football_parserf.py is an example implementation of regression_tree_cart.py that
 The random_forest.py module contains the functions to grow a random forest and use it for prediction. 
 
 football_forest.py is an example implementation of random_forest.py.
+
+## Run
+
+```
+python football_cart.py [options]
+```
+<b>Options</b>
+* --load filename: loads model from filename, else, construct model from training dataset
+* --save filename: saves pruned model to filename
+* --plot-tree: plots the entire tree into image
+* --plot-weights: plots the weights of split features in the entire tree
+* --plot-feature: plots weights of split features for the first test case
+* --test: runs the test cases
+
+## Setup
+
+```
+pip3 install -r requirements.txt
+```

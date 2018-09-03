@@ -81,7 +81,7 @@ def plot_cart(cart, _format='png', rankdir='UT', ax=None, **kwargs):
     return ax
 
 
-def plot_feature_importance(feature_wts, filename=None):
+def plot_feature_importance(feature_wts, filename=None, title='Feature weights'):
     try:
         import matplotlib.pyplot as plt
         from PIL import Image
@@ -91,7 +91,7 @@ def plot_feature_importance(feature_wts, filename=None):
     names = list(feature_wts.keys())
     values = list(map(lambda x: feature_wts[x], names))
     plt.barh(range(len(values)), values, tick_label=names)
-    plt.title('feature importance')
+    plt.title(title)
     buf = BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
