@@ -27,6 +27,18 @@ def is_tree(node):
 def is_leaf(node):
     return node is None or not node.is_tree()
 
+def feature_weights(path):
+    weights = {}
+    weights_percent = {}
+    total = len(path) * 1.0
+    for p in path:
+        feature_idx, feature_val = p
+        if feature_idx is None:
+            continue
+        weights[feature_idx] = weights.get(feature_idx, 0) + 1
+        weights_percent[feature_idx] = weights[feature_idx] / total
+    return weights, weights_percent
+
 def data_split(data_dict, feature_idx, feature_split):
     data_left = {}
     data_right = {}

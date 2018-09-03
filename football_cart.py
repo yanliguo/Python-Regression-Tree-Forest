@@ -5,7 +5,7 @@ from plot import plot_cart
 from model_io import *
 
 
-def test_and_print(test_dict_lines, tree_root):
+def test_and_print(test_dict_lines, tree_root, label_dicts=None):
     errors = []
     for name in test_dict_lines.keys():
         value = test_dict_lines[name]
@@ -13,7 +13,12 @@ def test_and_print(test_dict_lines, tree_root):
         predict, path = tree_root.lookup_with_path(features)
         path.reverse()
         act_val = value[1]
-        print("\nFor test example: ", name, "\n\tlookup features:", path)
+        # print("\nFor test example: ", name, "\n\tlookup features:", path)
+        feature_counts, feature_percents = feature_weights(path)
+        if label_dicts:
+            # converts feature index to feature name
+            feature_counts = {label_dicts.get(k, ''): v for (k, v) in feature_counts.items()}
+        print("\nFor test example: ", name, "\n\tlookup features:", feature_counts)
         print("\tActual value:", act_val, "\tpredicted value:", predict)
         errors.append(abs(act_val - predict))
     print("** Avg error:", numpy.mean(numpy.array(errors)))
@@ -68,7 +73,7 @@ if tree_root is None:
     tree_root = make_cart_tree(train_dict, B, max_depth=500, Nmin=5, labels=labels)
 
 if '--test' in args:
-    test_and_print(test_dict_lines, tree_root)
+    test_and_print(test_dict_lines, tree_root, label_dicts=labels)
     # if the model is load from file,
     # no need to prune again
     if not loaded:
