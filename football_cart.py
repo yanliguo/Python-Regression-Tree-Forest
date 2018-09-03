@@ -1,7 +1,7 @@
 import csv
 import sys
 from make_tree_cart import *
-from plot import plot_cart
+from plot import plot_cart, plot_feature_importance
 from model_io import *
 
 
@@ -89,3 +89,13 @@ if '--save' in args:
 # plot tree
 if '--plot-tree' in args:
     plot_cart(tree_root)
+
+if '--plot-feature' in args:
+    name = list(test_dict_lines.keys())[0]
+    feature, actual = test_dict_lines[name]
+    predict, path = tree_root.lookup_with_path(feature)
+    path.reverse()
+    feature_counts, feature_percents = feature_weights(path)
+    # converts feature index to feature name
+    feature_counts = {labels.get(k, ''): v for (k, v) in feature_counts.items()}
+    plot_feature_importance(feature_counts)

@@ -60,6 +60,7 @@ def plot_cart(cart, _format='png', rankdir='UT', ax=None, **kwargs):
     try:
         import matplotlib.pyplot as plt
         import matplotlib.image as image
+        from PIL import Image
     except ImportError:
         raise ImportError('Missing lib matplotlib')
 
@@ -71,8 +72,33 @@ def plot_cart(cart, _format='png', rankdir='UT', ax=None, **kwargs):
     bytesIO = BytesIO()
     bytesIO.write(graph.pipe(format=_format))
     bytesIO.seek(0)
-    img = image.imread(bytesIO)
-    ax.imshow(img)
-    ax.axis('off')
+    # display using PIL instead
+    with Image.open(bytesIO) as img:
+        img.show()
+    # img = image.imread(bytesIO)
+    # ax.imshow(img)
+    # ax.axis('off')
     return ax
+
+
+def plot_feature_importance(feature_wts, filename=None):
+    try:
+        import matplotlib.pyplot as plt
+        from PIL import Image
+    except:
+        raise ImportError('matplot missing')
+
+    names = list(feature_wts.keys())
+    values = list(map(lambda x: feature_wts[x], names))
+    plt.barh(range(len(values)), values, tick_label=names)
+    plt.title('feature importance')
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    img = Image.open(buf)
+    img.show()
+    buf.close()
+
+
+
 
