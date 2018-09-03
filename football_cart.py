@@ -1,5 +1,8 @@
 import csv
+import sys
 from make_tree_cart import *
+from plot import plot_cart
+from model_io import *
 
 
 def test_and_print(test_dict_lines, tree_root):
@@ -48,10 +51,36 @@ for row in f_reader:
         else:
             train_dict[tuple(dat)] = float(res)
 
+args = sys.argv.copy()
+
 # number of bootstrap samples
 B = 50
-tree_root = make_cart_tree(train_dict, B, max_depth=500, Nmin=5, labels=labels)
 
-test_and_print(test_dict_lines, tree_root)
-tree_root.prune_cart_tree(test_dict)
-test_and_print(test_dict_lines, tree_root)
+load_idx = args.index('--load') if '--load' in args else -1
+loaded = False
+tree_root = None
+if load_idx >= 0:
+    model_file_name = args[load_idx + 1]
+    tree_root = load_model(model_file_name)
+    loaded = tree_root is not None
+    print('loaded from', model_file_name)
+if tree_root is None:
+    tree_root = make_cart_tree(train_dict, B, max_depth=500, Nmin=5, labels=labels)
+
+if '--test' in args:
+    test_and_print(test_dict_lines, tree_root)
+    # if the model is load from file,
+    # no need to prune again
+    if not loaded:
+        tree_root.prune_cart_tree(test_dict)
+        test_and_print(test_dict_lines, tree_root)
+
+if '--save' in args:
+    save_idx = args.index('--save')
+    save_file_name = args[save_idx + 1]
+    save_model(save_file_name, tree_root)
+
+
+# plot tree
+if '--plot-tree' in args:
+    plot_cart(tree_root)
