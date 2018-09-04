@@ -88,7 +88,7 @@ def plot_feature_importance(feature_wts, filename=None, title='Feature weights')
     except:
         raise ImportError('matplot missing')
 
-    names = list(feature_wts.keys())
+    names = list(sorted(list(feature_wts.keys()), key=lambda k: feature_wts.get(k,0)))
     values = list(map(lambda x: feature_wts[x], names))
     plt.barh(range(len(values)), values, tick_label=names)
     plt.title(title)
