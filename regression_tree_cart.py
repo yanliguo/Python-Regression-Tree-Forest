@@ -160,8 +160,8 @@ class Tree(object):
                 self.left = self.left.prune_cart_tree(data_left)
             if is_tree(self.right):
                 self.right = self.right.prune_cart_tree(data_right)
-        # leaf
-        if not is_tree(self.left) and not is_tree(self.right):
+        # left, right -> leaf
+        if is_tree(self) and not is_tree(self.left) and not is_tree(self.right):
             data_left, data_right = data_split(test_data, self.split_var, self.split_val)
             left_predict = self.left.predict if self.left is not None else 0
             right_predict = self.right.predict if self.right is not None else 0
